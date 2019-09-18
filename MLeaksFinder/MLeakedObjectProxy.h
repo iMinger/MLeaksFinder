@@ -15,6 +15,7 @@
 @interface MLeakedObjectProxy : NSObject
 
 + (BOOL)isAnyObjectLeakedAtPtrs:(NSSet *)ptrs;
++ (BOOL)isMaybeListViewSectionHeaderFooterViewLeaked:(id)object;
 + (void)addLeakedObject:(id)object;
 
 @end

@@ -47,8 +47,37 @@ static NSMutableSet *leakedObjectPtrs;
     } else {
         return NO;
     }
-}
+    
 
+}
++ (BOOL)isMaybeListViewSectionHeaderFooterViewLeaked:(id)object {
+    // 这一段为临时解决代码，为了解决tableview 的sectionHeaderView 误报内存泄露的问题。
+    NSArray *viewStack = [object viewStack];
+    if(viewStack.count >= 2) {
+        NSString *className = viewStack[viewStack.count - 2];
+        Class class = NSClassFromString(className);
+        // 倒数第二个类不是tableview
+        if(([class isSubclassOfClass:[UITableView class]] ||
+            [class isSubclassOfClass:[UICollectionView class]])  &&
+           (![class isSubclassOfClass:[UITableViewCell class]] ||
+            ![class isSubclassOfClass:[UICollectionViewCell class]])
+           ) {
+            
+            // 倒数第一个类不是tableviewcell 类
+            NSString *className2 = viewStack[viewStack.count - 1];
+            Class class2 = NSClassFromString(className2);
+            if([class2 isSubclassOfClass:[UITableViewCell class]] ||
+               [class2 isSubclassOfClass:[UICollectionViewCell class]] ||
+               [class2 isSubclassOfClass:[UITableViewHeaderFooterView class]]) {
+                // 说明是cell或者headerFooterView
+            } else {
+                // 如果不是cell 或者headerFooterView ，那么可能是sectionviewheaderView，目前为了防止报错，全部不在提示。由此可能造成加载到tableview 上的其他view 检测失败。以后看影响会这一段临时代码进行更改。
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
 + (void)addLeakedObject:(id)object {
     NSAssert([NSThread isMainThread], @"Must be in main thread.");
     
