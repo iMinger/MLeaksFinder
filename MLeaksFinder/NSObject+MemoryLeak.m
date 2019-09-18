@@ -48,6 +48,10 @@ const void *const kLatestSenderKey = &kLatestSenderKey;
     if ([MLeakedObjectProxy isAnyObjectLeakedAtPtrs:[self parentPtrs]]) {
         return;
     }
+    
+    if ([MLeakedObjectProxy isMaybeListViewSectionHeaderFooterViewLeaked:self]){
+        return;
+    }
     [MLeakedObjectProxy addLeakedObject:self];
     
     NSString *className = NSStringFromClass([self class]);
@@ -120,12 +124,17 @@ const void *const kLatestSenderKey = &kLatestSenderKey;
                      @"UINavigationBar",
                      @"_UIAlertControllerActionView",
                      @"_UIVisualEffectBackdropView",
+                     @"_UIAlertControllerTextField",
                      nil];
         
         // System's bug since iOS 10 and not fixed yet up to this ci.
         NSString *systemVersion = [UIDevice currentDevice].systemVersion;
         if ([systemVersion compare:@"10.0" options:NSNumericSearch] != NSOrderedAscending) {
             [whitelist addObject:@"UISwitch"];
+        }
+        // 将UITextField加入白名单
+        if ([systemVersion compare:@"11.0" options:NSNumericSearch] != NSOrderedAscending) {
+            [whitelist addObject:@"UITextField"];
         }
     });
     return whitelist;
