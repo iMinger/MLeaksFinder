@@ -125,6 +125,10 @@ const void *const kLatestSenderKey = &kLatestSenderKey;
                      @"_UIAlertControllerActionView",
                      @"_UIVisualEffectBackdropView",
                      @"_UIAlertControllerTextField",
+                     @"UIActivityViewController",
+                     @"SLComposeViewController",
+                     @"UIImagePickerController",
+
                      nil];
         
         // System's bug since iOS 10 and not fixed yet up to this ci.
